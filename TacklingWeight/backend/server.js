@@ -23,6 +23,16 @@ app.use(cors({
   credentials: true,
 }));
 
+// Ensure DB is connected on every request (safe for serverless)
+app.use(async (_req, _res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
 // Body parsing
 app.use(express.json());
 app.use(cookieParser());
