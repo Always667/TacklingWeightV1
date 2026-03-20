@@ -16,4 +16,12 @@ const challengeSubmitLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-module.exports = { adviceLimiter, challengeSubmitLimiter };
+const chatLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 30,
+  message: { error: 'Too many chat requests. Please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+module.exports = { adviceLimiter, challengeSubmitLimiter, chatLimiter };
