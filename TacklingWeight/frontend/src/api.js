@@ -1,4 +1,5 @@
-const BASE = '/api';
+// In production, set VITE_API_URL to your deployed backend URL (e.g. https://your-backend.vercel.app)
+const BASE = import.meta.env.VITE_API_URL || '/api';
 
 async function request(path, options = {}) {
   const url = `${BASE}${path}`;
@@ -43,6 +44,7 @@ export const api = {
 
   // Advice
   getAdvice: (body) => request('/advice', { method: 'POST', body }),
+  chatAdvice: (body) => request('/advice/chat', { method: 'POST', body }),
 
   // Challenges
   getActiveChallenges: () => request('/challenges/active'),
