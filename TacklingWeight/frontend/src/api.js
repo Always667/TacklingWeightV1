@@ -14,9 +14,15 @@ async function request(path, options = {}) {
   const res = await fetch(url, config);
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    // Stale JWT (user deleted / re-seeded) — force a clean re-login
+    // Stale JWT (user deleted / re-seeded) — force a clean re-login,
+    // but only when we're already inside the app (not on auth pages).
     if (res.status === 401 && !path.startsWith('/auth/')) {
-      window.location.href = '/login';
+      const onAuthPage = ['/login', '/register'].some((p) =>
+        window.location.pathname.startsWith(p)
+      );
+      if (!onAuthPage) {
+        window.location.href = '/login';
+      }
       return;
     }
     const msg = data.error || data.errors?.join(', ') || `Request failed (${res.status})`;
