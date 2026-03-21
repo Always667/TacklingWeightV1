@@ -58,7 +58,9 @@ app.use((err, _req, res, _next) => {
 
 const PORT = process.env.PORT || 5000;
 
-if (process.env.NODE_ENV !== 'test') {
+// Only start the HTTP server when run directly (local dev).
+// On Vercel the file is imported as a module — do NOT call listen().
+if (require.main === module) {
   connectDB().then(() => {
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   });
