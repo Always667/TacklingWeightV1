@@ -18,8 +18,10 @@ const app = express();
 
 // Security
 app.use(helmet());
-app.use(cors());
-
+app.options('*', cors({
+  origin: "https://tackling-weight-v1-d66a.vercel.app/",
+  credentials: true
+}));
 // Ensure DB is connected on every request (safe for serverless)
 app.use(async (_req, _res, next) => {
   try {
