@@ -2,7 +2,15 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 const authenticate = async (req, res, next) => {
-  const token = req.cookies.token;
+  // Accept token from Authorization: Bearer header (works cross-origin)
+  // or cookie as fallback for local dev
+  let token;
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    token = authHeader.slice(7);
+  } else {
+    token = req.cookies?.token;
+  }
   if (!token) {
     return res.status(401).json({ error: 'Authentication required' });
   }
