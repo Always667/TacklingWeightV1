@@ -11,8 +11,8 @@ const TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 const cookieOptions = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax',
+  secure: true,      // always true — Vercel is always HTTPS
+  sameSite: 'none',  // required for cross-origin cookies (frontend & backend on different domains)
   maxAge: TOKEN_MAX_AGE,
 };
 
@@ -87,7 +87,7 @@ router.post(
 
 // POST /auth/logout
 router.post('/logout', (_req, res) => {
-  res.clearCookie('token');
+  res.clearCookie('token', { httpOnly: true, secure: true, sameSite: 'none' });
   res.json({ message: 'Logged out' });
 });
 
