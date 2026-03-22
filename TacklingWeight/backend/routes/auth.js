@@ -9,12 +9,7 @@ const router = express.Router();
 const SALT_ROUNDS = 12;
 const TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
 
-const cookieOptions = {
-  httpOnly: true,
-  secure: true,      // always true — Vercel is always HTTPS
-  sameSite: 'none',  // required for cross-origin cookies (frontend & backend on different domains)
-  maxAge: TOKEN_MAX_AGE,
-};
+// No cookie options needed — we use Bearer tokens in Authorization header
 
 // POST /auth/register
 router.post(
@@ -38,9 +33,9 @@ router.post(
       const user = await User.create({ email, passwordHash, alias });
 
       const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-      res.cookie('token', token, cookieOptions);
 
       res.status(201).json({
+        token,
         user: { id: user._id, email: user.email, alias: user.alias },
       });
     } catch (err) {
@@ -73,9 +68,9 @@ router.post(
       }
 
       const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-      res.cookie('token', token, cookieOptions);
 
       res.json({
+        token,
         user: { id: user._id, email: user.email, alias: user.alias },
       });
     } catch (err) {
@@ -85,9 +80,8 @@ router.post(
   }
 );
 
-// POST /auth/logout
+// POST /auth/logout — token is stateless; client just drops it from localStorage
 router.post('/logout', (_req, res) => {
-  res.clearCookie('token', { httpOnly: true, secure: true, sameSite: 'none' });
   res.json({ message: 'Logged out' });
 });
 
