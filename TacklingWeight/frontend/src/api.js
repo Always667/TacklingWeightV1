@@ -1,11 +1,21 @@
 // In production, set VITE_API_URL to your deployed backend URL (e.g. https://your-backend.vercel.app)
 const BASE = import.meta.env.VITE_API_URL || '/api';
 
+const TOKEN_KEY = 'tw_token';
+export const tokenStore = {
+  get: () => localStorage.getItem(TOKEN_KEY),
+  set: (t) => localStorage.setItem(TOKEN_KEY, t),
+  clear: () => localStorage.removeItem(TOKEN_KEY),
+};
+
 async function request(path, options = {}) {
   const url = `${BASE}${path}`;
+  const token = tokenStore.get();
   const config = {
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     ...options,
   };
   if (config.body && typeof config.body !== 'string') {
